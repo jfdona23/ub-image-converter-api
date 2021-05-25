@@ -69,10 +69,12 @@ class ImgProcessor:
 
     def src_image(self) -> np.ndarray:
         """Return the original image"""
+
         return self.__src_img
 
     def dst_image(self) -> np.ndarray:
         """Return the customized image"""
+
         return self.__dst_img
 
     @__store_result
