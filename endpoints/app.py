@@ -23,7 +23,7 @@ def help():
 
 @app.route('/ping')
 def health():
-    return 'Pong!'
+    return 'pong'
 
 
 if __name__ == "__main__":
