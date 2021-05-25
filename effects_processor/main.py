@@ -106,6 +106,7 @@ class ImgProcessor:
         return cv.GaussianBlur(img, (factor, factor), 0)
 
 
+    @__store_result
     def emboss(self) -> np.ndarray:
         """Emboss effect over an image"""
         img = self.__src_img
