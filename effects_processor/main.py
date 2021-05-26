@@ -1,6 +1,7 @@
 """
 Process an image using different effects
 """
+from functools import wraps
 from typing import Union
 
 import cv2 as cv
@@ -93,6 +94,7 @@ class ImgProcessor:
     def __store_result(func):
         """Decorator to keep a byte copy of the customized image"""
 
+        @wraps(func)
         def wrapper(self, *args, **kwargs):
             result = func(self, *args, **kwargs)
             self.__dst_img = self.__img_encode(img=result)
