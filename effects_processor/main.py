@@ -1,6 +1,8 @@
 """
 Process an image using different effects
 """
+from typing import Union
+
 import cv2 as cv
 import numpy as np
 
@@ -17,6 +19,9 @@ class ImgProcessor:
 
         self.__src_img = self.__img_decode(img)
         self.__dst_img = img
+
+        if isinstance(self.__src_img, type(None)):
+            raise ValueError("No se pudo interpretar la imagen adecaudamente.")
 
     def __img_decode(self, img: bytes) -> np.ndarray:
         """Convert an image into numpy array compatible with OpenCV
@@ -49,12 +54,39 @@ class ImgProcessor:
 
         Args:
             - img (np.ndarray): Image to be converted
-            - format (str): Output format for the image. Default: jpg
+            - format (str): Output format for the image.
+                In case of error defaults to jpg. Default: jpg
 
         Returns:
             - numpy array: Image converted to an array of bytes
         """
 
+        accepted_formats = [
+            "bmp",
+            "dib",
+            "jpeg",
+            "jpg",
+            "jpe",
+            "jp2",
+            "png",
+            "webp",
+            "pbm",
+            "pgm",
+            "ppm",
+            "pxm",
+            "pnm",
+            "pfm",
+            "sr",
+            "ras",
+            "tiff",
+            "tif",
+            "exr",
+            "hdr",
+            "pic",
+        ]
+        format = (
+            "jpg" if str(format).lower() not in accepted_formats else format.lower()
+        )
         return cv.imencode("." + format, img)[1]
 
     def __store_result(func):
@@ -78,25 +110,24 @@ class ImgProcessor:
         return self.__dst_img
 
     @__store_result
-    def rotate(self, degrees: int = 90, clockwise: bool = True) -> np.ndarray:
+    def rotate(self, rotate_90: bool = False, clockwise: bool = False) -> np.ndarray:
         """Rotate an image 90 or 180 degrees
 
         Args:
-            - degrees (int): Degrees of rotation.
-                Any value but 90 will default into 180 degrees. Default: 90
-            - clockwise (bool): When degrees=90, determines if the rotation is clockwise or not
+            - rotate_90 (bool): If True rotates the image 90 degrees.
+                If False, rotates the image 180 degrees. Default: False
+            - clockwise (bool): When rotate_90 is True,
+                determines if the rotation is clockwise or not. Default: False
 
         Returns:
             - numpy array: Image rotated as an OpenCV numpy array
         """
 
         img = self.__src_img
-        if degrees == 90:
-            return (
-                cv.rotate(img, cv.ROTATE_90_CLOCKWISE)
-                if clockwise
-                else cv.rotate(img, cv.ROTATE_90_COUNTERCLOCKWISE)
-            )
+        if rotate_90 and clockwise:
+            return cv.rotate(img, cv.ROTATE_90_CLOCKWISE)
+        if rotate_90:
+            return cv.rotate(img, cv.ROTATE_90_COUNTERCLOCKWISE)
         return cv.rotate(img, cv.ROTATE_180)
 
     @__store_result
@@ -126,8 +157,8 @@ class ImgProcessor:
         """Flip an image over its axis
 
         Args:
-            - axis (str): Axis to rotate the image. Possible values are
-                X (x axis), Y (y axis), B (both axis). Any other value
+            - axis (str): Rotation axis of the image. Possible values are
+                X/x (x axis), Y/y (y axis), B/b (both axis). Any other value
                 will default to "b". Default: b
 
         Returns:
@@ -135,6 +166,7 @@ class ImgProcessor:
         """
 
         img = self.__src_img
+        axis = str(axis)
         if axis.lower() == "x":
             return cv.flip(img, 0)
         if axis.lower() == "y":
@@ -179,7 +211,11 @@ class ImgProcessor:
         """
 
         img = self.__src_img
-        if not factor % 2:
+        if not isinstance(factor, int):
+            factor = 35
+        elif factor < 1:
+            factor = 35
+        elif not factor % 2:
             factor += 1
         return cv.GaussianBlur(img, (factor, factor), 0)
 
@@ -196,7 +232,7 @@ class ImgProcessor:
         return cv.filter2D(img, -1, kernel)
 
     @__store_result
-    def scale(self, factor: float = 1) -> np.ndarray:
+    def scale(self, factor: Union[float, int] = 1) -> np.ndarray:
         """Scale an image using a factor
 
         Args:
@@ -207,13 +243,17 @@ class ImgProcessor:
         """
 
         img = self.__src_img
+        if not isinstance(factor, (float, int)):
+            factor = 1
+        elif factor < 0:
+            factor = 1
         height, width = img.shape[:2]
         new_height = int(height * factor)
         new_width = int(width * factor)
         return cv.resize(img, (new_width, new_height))
 
     @__store_result
-    def noise(self, factor: float = 0.2) -> np.ndarray:
+    def noise(self, factor: Union[float, int] = 0.2) -> np.ndarray:
         """Add noise to an image
 
         Args:
@@ -224,6 +264,10 @@ class ImgProcessor:
         """
 
         img = self.__src_img
+        if not isinstance(factor, (float, int)):
+            factor = 0.2
+        elif factor < 0:
+            factor = 0.2
         noise = np.zeros(img.shape)
         cv.randu(noise, 0, 256)
         return img + np.array(factor * noise)
@@ -240,7 +284,11 @@ class ImgProcessor:
         """
 
         img = self.__src_img
-        if not factor % 2:
+        if not isinstance(factor, int):
+            factor = 5
+        elif factor < 1:
+            factor = 5
+        elif not factor % 2:
             factor += 1
         return cv.Laplacian(img, cv.CV_64F, ksize=factor)
 
@@ -258,7 +306,11 @@ class ImgProcessor:
         """
 
         img = self.__src_img
-        if not factor % 2:
+        if not isinstance(factor, int):
+            factor = 3
+        elif factor < 1:
+            factor = 3
+        elif not factor % 2:
             factor += 1
         dx, dy = (1, 0) if horizontal else (0, 1)
         return cv.Sobel(img, cv.CV_64F, dx, dy, ksize=factor)
