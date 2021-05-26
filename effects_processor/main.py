@@ -38,6 +38,7 @@ class ImgProcessor:
 
     def __img_encode(self, img: np.ndarray, format: str = "jpg") -> np.ndarray:
         """Convert an OpenCV numpy array into an image
+
         Supported formats are:
             Windows bitmaps - *.bmp, *.dib
             JPEG files - *.jpeg, *.jpg, *.jpe
