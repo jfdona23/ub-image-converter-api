@@ -12,8 +12,7 @@ class ImgProcessor:
     """Apply different effects to an image"""
 
     def __init__(self, img: bytes):
-        """Init
-
+        """
         Args:
             - img (bytes): Image to be processed
         """
