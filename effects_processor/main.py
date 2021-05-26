@@ -36,7 +36,7 @@ class ImgProcessor:
         img_np = np.frombuffer(img, np.uint8)
         return cv.imdecode(img_np, cv.IMREAD_COLOR)
 
-    def __img_encode(self, img: np.ndarray, format: str = "jpg") -> np.ndarray:
+    def __img_encode(self, img: np.ndarray, fmt: str = "jpg") -> np.ndarray:
         """Convert an OpenCV numpy array into an image
 
         Supported formats are:
@@ -62,7 +62,7 @@ class ImgProcessor:
             - numpy array: Image converted to an array of bytes
         """
 
-        accepted_formats = [
+        accepted_fmt = [
             "bmp",
             "dib",
             "jpeg",
@@ -85,10 +85,8 @@ class ImgProcessor:
             "hdr",
             "pic",
         ]
-        format = (
-            "jpg" if str(format).lower() not in accepted_formats else format.lower()
-        )
-        return cv.imencode("." + format, img)[1]
+        fmt = "jpg" if str(fmt).lower() not in accepted_fmt else fmt.lower()
+        return cv.imencode("." + fmt, img)[1]
 
     def __store_result(func):
         """Decorator to keep a byte copy of the customized image"""
