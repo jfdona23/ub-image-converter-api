@@ -1,10 +1,11 @@
+# pylint: disable=no-self-use, invalid-name, no-self-argument
 """
 Process an image using different effects
 """
 from functools import wraps
-from typing import Union
+from typing import Callable, Union
 
-import cv2 as cv
+import cv2 as cv  # type: ignore
 import numpy as np
 
 
@@ -105,13 +106,13 @@ class ImgProcessor:
         fmt = "jpg" if str(fmt).lower() not in accepted_fmt else fmt.lower()
         return cv.imencode("." + fmt, img)[1]
 
-    def __store_result(func):
+    def __store_result(func: Callable) -> Callable:  # type: ignore[misc]
         """Decorator to keep a byte copy of the customized image"""
 
         @wraps(func)
         def wrapper(self, *args, **kwargs):
-            result = func(self, *args, **kwargs)
-            self.__dst_img = self.__img_encode(img=result)
+            result = func(self, *args, **kwargs)  # pylint: disable=not-callable
+            self.__dst_img = self.__img_encode(img=result)  # pylint: disable=protected-access
             return result
 
         return wrapper
@@ -124,7 +125,7 @@ class ImgProcessor:
     def dst_image(self) -> np.ndarray:
         """Return the customized image"""
 
-        return self.__dst_img
+        return self.__dst_img  # type: ignore[return-value]
 
     @__store_result
     def rotate(self, rotate_90: bool = False, clockwise: bool = False) -> np.ndarray:
@@ -342,4 +343,4 @@ if __name__ == "__main__":
     with open("test.jpg", "wb") as f:
         test.sepia()
         test.negative()
-        f.write(test.dst_image())
+        f.write(test.dst_image())  # type: ignore[arg-type]
