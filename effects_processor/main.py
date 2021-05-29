@@ -11,6 +11,23 @@ import numpy as np
 class ImgProcessor:
     """Apply different effects to an image"""
 
+    effect_weight = {
+        "blur": 5,
+        "emboss": 10,
+        "flip": 3,
+        "grayscale": 3,
+        "laplacian": 10,
+        "negative": 1,
+        "noise": 5,
+        "rotate": 5,
+        "scale": 20,
+        "sepia": 10,
+        "sharp": 10,
+        "sobel": 10,
+    }
+    """Level of 'weight' that a effect has.
+    These KPI are merely author's criteria and can be overwritten."""
+
     def __init__(self, img: bytes):
         """
         Args:
