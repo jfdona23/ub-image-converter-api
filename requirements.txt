@@ -1,0 +1,5 @@
+cvlib==0.2.6
+# Pick only ONE of the following opencv options:
+#opencv-python==4.5.2.52   # Full X11 dependencies
+opencv-python-headless==4.5.2.52  # No X11 dependencies (cv2.imshow unsupported)
+Flask==2.0.1
