@@ -1,3 +1,5 @@
+PKG := "ub_image_converter_api"
+
 .PHONY: venv devs deps fmt lint docs
 
 venv:
@@ -9,11 +11,14 @@ devs:
 deps:
 	pip install -r requirements.txt
 
+chkfmt:
+	black --diff -v $(PKG)
+
 fmt:
-	black -v .
+	black -v $(PKG)
 
 lint:
-	pylint --generated-members=cv .
+	pylint --generated-members=cv $(PKG)
 
 docs:
-	mkdir -p docs; pdoc3 --force --html -o docs .
+	mkdir -p docs; pdoc3 --force --html -o docs $(PKG)
