@@ -342,5 +342,5 @@ if __name__ == "__main__":
 
     with open("test.jpg", "wb") as f:
         test.sepia()
-        test.noise()
+        test.negative()
         f.write(test.dst_image())  # type: ignore[arg-type]
