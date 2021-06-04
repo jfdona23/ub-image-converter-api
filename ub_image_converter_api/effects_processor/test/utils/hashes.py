@@ -24,7 +24,7 @@ def get_hashes(obj: Callable) -> dict:
     return hashes
 
 if __name__ == "__main__":
-    with open(f"{Path(__file__).parent.absolute()}/../city.jpg", "rb") as f:
+    with open(f"{Path(__file__).parent.absolute()}/city.jpg", "rb") as f:
         image = f.read()
         test = ImgProcessor(image)
     print(get_hashes(test))
