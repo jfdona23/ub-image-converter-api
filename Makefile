@@ -12,13 +12,16 @@ deps:
 	pip install -r requirements.txt
 
 chkfmt:
-	black --diff -v $(PKG)
+	black --diff -l 100 -v $(PKG)
 
 fmt:
-	black -v $(PKG)
+	black -l 100 -v $(PKG)
 
 lint:
 	pylint --generated-members=cv $(PKG)
 
 docs:
 	mkdir -p docs; pdoc3 --force --html -o docs $(PKG)
+
+test:
+	python -m pytest
