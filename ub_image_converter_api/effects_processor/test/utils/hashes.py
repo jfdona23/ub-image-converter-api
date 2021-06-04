@@ -1,6 +1,6 @@
 """
 Hashes for the testing image.
-Ifthe image for testing changes, so these hashes
+If the image for testing changes, so these hashes
 """
 from hashlib import md5
 from pathlib import Path
