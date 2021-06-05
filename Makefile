@@ -31,4 +31,4 @@ docs:
 	mkdir -p docs; pdoc3 --force --html -o docs $(PKG)
 
 test:
-	python -m pytest
+	python -m pytest --cov $(PKG)

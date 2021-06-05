@@ -4,3 +4,4 @@ pdoc3==0.9.2
 mccabe==0.6.1
 mypy==0.812
 pytest==6.2.4
+pytest-cov==2.12.1
