@@ -19,7 +19,7 @@ class ImgProcessor:
         "grayscale": 3,
         "laplacian": 10,
         "negative": 1,
-        "noise": 5,
+        "noise": 10,
         "rotate": 5,
         "scale": 20,
         "sepia": 10,
@@ -271,11 +271,11 @@ class ImgProcessor:
         return cv.resize(img, (new_width, new_height))
 
     @__store_result
-    def noise(self, factor: Union[float, int] = 0.2) -> np.ndarray:
+    def noise(self, factor: Union[float, int] = 1.5) -> np.ndarray:
         """Add noise to an image
 
         Args:
-            - factor (float): Amount of noise injected. Default: 0.2
+            - factor (float): Amount of noise injected. Default: 1.5
 
         Returns:
             - numpy array: Image with noise injected as an OpenCV numpy array
@@ -283,12 +283,12 @@ class ImgProcessor:
 
         img = self.__src_img
         if not isinstance(factor, (float, int)):
-            factor = 0.2
+            factor = 1.5
         elif factor < 0:
-            factor = 0.2
-        noise = np.zeros(img.shape)
-        cv.randu(noise, 0, 256)
-        return img + np.array(factor * noise)
+            factor = 1.5
+        noise = np.zeros(img.shape, dtype=np.float64)
+        cv.randn(noise, 0, 128)
+        return cv.add(img, np.array(factor * noise), dtype=cv.CV_64F)
 
     @__store_result
     def laplacian(self, factor: int = 5) -> np.ndarray:
