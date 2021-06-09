@@ -184,12 +184,9 @@ class ImgProcessor:
         """
 
         img = self.__src_img
-        axis = str(axis)
-        if axis.lower() == "x":
-            return cv.flip(img, 0)
-        if axis.lower() == "y":
-            return cv.flip(img, 1)
-        return cv.flip(img, -1)
+        axis_map = {"x": 0, "y": 1, "b": -1}
+        axis = str(axis).lower()
+        return cv.flip(img, axis_map.get(axis, -1))
 
     @__store_result
     def sharp(self) -> np.ndarray:
@@ -212,9 +209,7 @@ class ImgProcessor:
         """
 
         img_rgb = cv.cvtColor(self.__src_img, cv.COLOR_BGR2RGB)
-        kernel = np.array(
-            [[0.272, 0.534, 0.131], [0.349, 0.686, 0.168], [0.393, 0.769, 0.189]]
-        )
+        kernel = np.array([[0.272, 0.534, 0.131], [0.349, 0.686, 0.168], [0.393, 0.769, 0.189]])
         return cv.transform(img_rgb, kernel)
 
     @__store_result
@@ -222,7 +217,7 @@ class ImgProcessor:
         """Blur effect over an image
 
         Args:
-            - factor (int): Blur intensity. Positive odd numbers only. Default: 35
+            - factor (int): Blur intensity. Positive odd numbers only (max 99). Default: 35
 
         Returns:
             - numpy array: Image blured as an OpenCV numpy array
@@ -231,7 +226,7 @@ class ImgProcessor:
         img = self.__src_img
         if not isinstance(factor, int):
             factor = 35
-        elif factor < 1:
+        elif factor < 1 or factor > 99:
             factor = 35
         elif not factor % 2:
             factor += 1
@@ -254,7 +249,7 @@ class ImgProcessor:
         """Scale an image using a factor
 
         Args:
-            - factor (float): Scale factor. Postive float number. Default: 1
+            - factor (float): Scale factor. Postive float number (max 5). Default: 1
 
         Returns:
             - numpy array: Scaled image as an OpenCV numpy array
@@ -263,7 +258,7 @@ class ImgProcessor:
         img = self.__src_img
         if not isinstance(factor, (float, int)):
             factor = 1
-        elif factor < 0:
+        elif factor < 0 or factor > 5:
             factor = 1
         height, width = img.shape[:2]
         new_height = int(height * factor)
@@ -295,7 +290,7 @@ class ImgProcessor:
         """Laplacian effect over an image
 
         Args:
-            - factor (int): Effect intensity. Positive odd numbers only. Default: 5
+            - factor (int): Effect intensity. Positive odd numbers only (max 31). Default: 5
 
         Returns:
             - numpy array: Image with laplacian effect as an OpenCV numpy array
@@ -304,7 +299,7 @@ class ImgProcessor:
         img = self.__src_img
         if not isinstance(factor, int):
             factor = 5
-        elif factor < 1:
+        elif factor < 1 or factor > 31:
             factor = 5
         elif not factor % 2:
             factor += 1
@@ -315,7 +310,7 @@ class ImgProcessor:
         """Sobel effect over an image
 
         Args:
-            - factor (int): Effect intensity. Positive odd numbers only. Default: 3
+            - factor (int): Effect intensity. Positive odd numbers only (max 31). Default: 3
             - horizontal (bool): If True, effect's direcion is horizontal.
                 Otherwise direction is vertical. Default: True
 
@@ -326,7 +321,7 @@ class ImgProcessor:
         img = self.__src_img
         if not isinstance(factor, int):
             factor = 3
-        elif factor < 1:
+        elif factor < 1 or factor > 31:
             factor = 3
         elif not factor % 2:
             factor += 1
