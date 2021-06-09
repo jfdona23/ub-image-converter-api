@@ -29,7 +29,7 @@ def test_all_effects_hashes():
         assert img_hashes[effect] == get_effect_hash(test, effect)
 
 
-@pytest.mark.timeout(2)
+@pytest.mark.timeout(4)
 def test_noise():
     """Test noise effect and hash"""
 
@@ -49,7 +49,7 @@ def test_noise():
         assert md5(test.noise(1000)).hexdigest() == md5(test.noise(1000)).hexdigest()
 
 
-@pytest.mark.timeout(1)
+@pytest.mark.timeout(2)
 def test_blur():
     """Test blur effect"""
     assert img_hashes["blur"] == md5(test.blur(-1)).hexdigest()
