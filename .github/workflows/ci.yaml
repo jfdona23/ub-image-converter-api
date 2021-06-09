@@ -12,7 +12,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Prepare the environment
-        uses: make deps
+        run: make deps
 
       - name: Test the code
-        uses: make test
+        run: make test
