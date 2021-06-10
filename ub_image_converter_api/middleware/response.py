@@ -49,18 +49,51 @@ class RequestHandler:
 
 
     def _verify_effects_weight(self,effects_to_apply: List[str], max_weight: int=50) -> bool:
+        '''Verify arbitrary limit for weight effects
+        
+        Args:
+            - effects_to_apply (List[str]): effects to apply to image
+            - max_weight (int): Maximun weight of sum of all effects. Only positive integers greater than 0. Default: 50
+
+        Returns:
+            - bool: True if total sum of effects weight less than maximun weight and greater than zero.
+        '''
         return self._getTotalWeight(effects_to_apply) <= (1 if max_weight < 1 else max_weight)
 
 
     def _getEffectsWeight(self, effects_to_apply: List[str]) -> List[int]:
+        '''Get list of weights for each effect to apply to image
+
+        Args:
+            - effects_to_apply (List[str]): effects to apply to image
+
+        Returns:
+            - List[int]: Previously set weight of each effect to apply.
+        '''
         return [self.effect_weight_map[e] for e in effects_to_apply]
 
 
     def _getTotalWeight(self, effects_to_apply: List[str]) -> int:
+        '''Get sum of weight of effects to apply to image
+
+        Args:
+            - effects_to_apply (List[str]): effects to apply to image
+
+        Returns:
+            - int: Total weight of list of effects
+        '''
         return sum(self._getEffectsWeight(effects_to_apply))
 
     
     def _build_success_template(self, img: bytes) -> Dict:
+        ''''Success response Template
+
+        Args:
+            - img (bytes): image to process
+
+        Returns:
+            - dict: Success template template
+        '''
         success_template =  {
             "img": img,
             "msg": "Image processed correctly"
