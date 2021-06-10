@@ -17,16 +17,25 @@ class RequestHandler:
         "invalidImgFormat": [4, "Invalid image format"]
     }
 
-    def __init__(self, request) -> None:
+    def __init__(self, request: dict):
         """
         Args:
-            - request (to be decided): requets to be processed
+            - request (dict): requets to be processed
         """
         self.request = request
         self.effect_weight_map = ImgProcessor.effect_weight
         
 
     def _build_error_template(self, error_type: str, effects_weight: list=[]) -> dict:
+        ''''Error response Template
+
+        Args:
+            - error_type (str): Name of defined error
+            - effects_weight (list): Weight of each effect. Only positive integers. Default: empty list
+
+        Returns:
+            - dict: Error template
+        '''
         error_template = {
             "cod": self.errors_map[error_type][0],
             "msg": self.errors_map[error_type][1]
@@ -36,8 +45,6 @@ class RequestHandler:
             error_template["effect_weight"] = effects_weight
             error_template["total_effect_weight"] = sum(effects_weight)
 
-        # return make_response(error_template)
-        # return jsonify(error_template)
         return error_template
 
 
@@ -53,12 +60,10 @@ class RequestHandler:
         return sum(self._getEffectsWeight(effects_to_apply))
 
     
-    def _build_success_template(self, img: bytes, effect_weight: List[int]) -> Dict:
+    def _build_success_template(self, img: bytes) -> Dict:
         success_template =  {
             "img": img,
-            "msg": "Image processed correctly",
-            "effect_weight": effect_weight,
-            "Total_weight": sum(effect_weight),
+            "msg": "Image processed correctly"
         }
         return success_template
 
@@ -85,7 +90,8 @@ class RequestHandler:
          
         i_p = ImgProcessor(img)
         for e in effects:
-            i_p.e()
-        c_img: bytes = bytes(i_p.dst_image())
-        return self._build_success_template(c_img, self._getEffectsWeight(effects))
+            getattr(i_p, e)()
+            i_p = ImgProcessor(i_p.dst_image())
+
+        return self._build_success_template(i_p.dst_image())
 
