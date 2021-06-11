@@ -25,13 +25,30 @@ class RequestHandler:
         self.request = request
         self.effect_weight_map = ImgProcessor.effect_weight
         
+    def _effects_weight_apply_map(self, effects_to_apply: List[str]) -> Dict[str, int]:
+        '''Makes dict of effects to apply with ther respective weights
 
-    def _build_error_template(self, error_type: str, effects_weight: list=[]) -> dict:
+        Args:
+            - effects_to_apply (List[str]): effects to apply to image
+
+        Returns:
+            - Dict[str, int]: Effect - weight dictionary
+        '''
+        ew_map: Dict[str, int] = self.effect_weight_map
+        new_map = dict()
+        for e in effects_to_apply:
+            new_map[e] = ew_map.get(e, 0)
+        return new_map
+        
+
+
+    def _build_error_template(self, error_type: str, effects_weight: list=[], effects_to_apply: List[str]=[]) -> dict:
         ''''Error response Template
 
         Args:
             - error_type (str): Name of defined error
-            - effects_weight (list): Weight of each effect. Only positive integers. Default: empty list
+            - effects_weight (List[int]): Weight of each effect. Only positive integers. Default: empty list
+            - effects_to_apply (List[str]): effects to apply to image. Default: empty list
 
         Returns:
             - dict: Error template
@@ -42,7 +59,7 @@ class RequestHandler:
         }
 
         if effects_weight:
-            error_template["effect_weight"] = effects_weight
+            error_template["effect_weight"] = self._effects_weight_apply_map(effects_to_apply)
             error_template["total_effect_weight"] = sum(effects_weight)
 
         return error_template
