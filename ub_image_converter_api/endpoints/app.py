@@ -1,29 +1,19 @@
-from flask import Flask
+from flask import Flask, request
+from ..middleware.response import RequestHandler 
+
 app = Flask(__name__)
 
-@app.route('/')
+@app.route('/', methods=["POST"])
 def index():
-    pass
-
-
-@app.route('/main')
-def main():
-    pass
-
-
-@app.route('/last_response')
-def last_response():
-    pass
-
-
-@app.route('/help')
-def help():
-    pass
+    a = request.get_json()
+    r = RequestHandler(a)
+    return r.build_response()
 
 
 @app.route('/ping')
 def health():
-    return 'pong'
+    r = {"msg": "pong"}
+    return r
 
 
 if __name__ == "__main__":

@@ -15,7 +15,7 @@ class RequestHandler:
         "noImage": [1, "No image to process"],
         "noEffects": [2, "No effects given"],
         "weightExceeded": [3, "Sum of effect's weight exceeds limit"],
-        "invalidImgFormat": [4, "Invalid image format"]
+        "malformedJson": [4, "Invalid Json format"]
     }
 
     def __init__(self, request: dict):
@@ -123,6 +123,9 @@ class RequestHandler:
     def build_response(self):
         if isinstance(self.request, dict):
             data = self.request
+            if not all(["img" in data.keys(), "effects" in data.keys()]):
+                response_template = self._build_error_template("malformedJson")
+                return response_template
         else:
             response_template = self._build_error_template("notJson")
             return response_template
