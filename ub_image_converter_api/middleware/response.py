@@ -1,7 +1,8 @@
 """
 Handle requests based on a json format
 """
-
+from base64 import b64decode, b64encode
+from json import dumps
 from typing import Dict, List
 from ..effects_processor.main import ImgProcessor
 
@@ -14,7 +15,7 @@ class RequestHandler:
         "noImage": [1, "No image to process"],
         "noEffects": [2, "No effects given"],
         "weightExceeded": [3, "Sum of effect's weight exceeds limit"],
-        "invalidImgFormat": [4, "Invalid image format"]
+        "malformedJson": [4, "Invalid Json format"]
     }
 
     def __init__(self, request: dict):
@@ -111,21 +112,25 @@ class RequestHandler:
         Returns:
             - dict: Success template template
         '''
+        img_b64 = b64encode(img).decode()
         success_template =  {
-            "img": img,
+            "img": img_b64,
             "msg": "Image processed correctly"
         }
-        return success_template
+        return dumps(success_template)
 
 
     def build_response(self):
-        try:
-            data = self.request.loads()
-        except:
+        if isinstance(self.request, dict):
+            data = self.request
+            if not all(["img" in data.keys(), "effects" in data.keys()]):
+                response_template = self._build_error_template("malformedJson")
+                return response_template
+        else:
             response_template = self._build_error_template("notJson")
             return response_template
 
-        img = data.get("img", None)
+        img = b64decode(data.get("img", None))
         if not img:
             response_template = self._build_error_template("noImage")
             return response_template           
@@ -145,3 +150,15 @@ class RequestHandler:
 
         return self._build_success_template(i_p.dst_image())
 
+if __name__ == "__main__":
+
+    with open("text.b64", "r") as f:
+        txt = f.read()
+        r = {
+            "img": txt,
+            "effects": [
+                "negative",
+            ]
+        }
+        req = RequestHandler(r)
+        print(req.build_response())
