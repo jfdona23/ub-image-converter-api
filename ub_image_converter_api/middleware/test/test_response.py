@@ -58,7 +58,7 @@ def test_RequestHandler_build_response_errors():
     r = RequestHandler(makeRequest(effects=None, fileb64="text.b64"))
     assert r.build_response() == error_json("noEffects")
     r = RequestHandler(makeRequest(effects=["negative","scale","sepia","sharp","sobel"], fileb64="text.b64"))
-    assert r.build_response() == error_json("weightExceeded") # weight: 51
+    assert r.build_response() == error_json("weightExceeded")
     
 
 def test_RequestHandler_build_response_success():
@@ -70,3 +70,28 @@ def test_RequestHandler_build_response_success():
     assert r.build_response()["msg"] == "Image processed correctly" 
     r = RequestHandler(makeRequest(effects=["blur", "negative" ], fileb64="text.b64"))
     assert r.build_response()["msg"] == "Image processed correctly"
+
+
+def test_RequestHandler_effects_weight_logic():
+    effects = ["unknown_effect1", "unknown_effect2", "negative"]
+    r = RequestHandler(makeRequest(effects=effects, fileb64="text.b64"))
+    assert r._effects_weight_apply_map(effects_to_apply=effects) == {"unknown_effect1": 0, "unknown_effect2": 0, "negative": 1} 
+    assert r._getEffectsWeight(effects_to_apply=effects) == [0, 0, 1]
+    total_weight = r._getTotalWeight(effects_to_apply=effects)
+    assert total_weight == 1 and r._verify_effects_weight(effects_to_apply=effects) == True
+
+    effects = ["negative","scale","sepia","sharp","sobel"]
+    r = RequestHandler(makeRequest(effects=effects, fileb64="text.b64"))
+    total_weight = r._getTotalWeight(effects_to_apply=effects)
+    assert total_weight == 51 and r._verify_effects_weight(effects_to_apply=effects) == False
+
+    r = RequestHandler(makeRequest(effects=[], fileb64="text.b64"))
+    total_weight = r._getTotalWeight(effects_to_apply=[])
+    assert total_weight == 0 and r._verify_effects_weight(effects_to_apply=effects) == True
+
+
+def test_RequestHandler_constructor():
+    effects = ["negative","scale","sepia","sharp","sobel"]
+    req = makeRequest(effects=effects, fileb64="text.b64")
+    rh = RequestHandler(req)
+    assert rh.request == req
